@@ -8,33 +8,7 @@ app.use(express.static('dist'))
 app.use(cors())
 app.use(express.json())
 
-let notes = [
-    {
-      id: 1,
-      content: "HTML is easy",
-      important: true
-    },
-    {
-      id: 2,
-      content: "Browser can execute only JavaScript",
-      important: false
-    },
-    {
-      id: 3,
-      content: "GET and POST are the most important methods of HTTP protocol",
-      important: true
-    }
-  ]
-
  
-// if (process.argv.length<3) {
-//   console.log('give password as argument')
-//   process.exit(1)
-// }
-
-// const password = process.argv[2]
-
-
   app.get('/', (request, response)=> {
     response.send('<h1>Hello World!</h1>')
   })
