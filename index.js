@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const cors = require('cors')
+const Note = require('./models/note')
+
 app.use(express.static('dist'))
 app.use(cors())
 app.use(express.json())
@@ -23,21 +26,30 @@ let notes = [
     }
   ]
 
+ 
+// if (process.argv.length<3) {
+//   console.log('give password as argument')
+//   process.exit(1)
+// }
+
+// const password = process.argv[2]
+
+
   app.get('/', (request, response)=> {
     response.send('<h1>Hello World!</h1>')
   })
+
+
   app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    Note.find({},{_id: 0, __v: 0}).then(notes => {
+      response.json(notes)
+    })
   })
 
   app.get('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const note = notes.find(note => note.id === id)
-    if (note) {
-        response.json(note)
-    } else {
-        response.status(404).send('No note exists for requested id').end()
-    }
+   Note.findById (request.params.id).then(note => {
+    response.json(note);
+   })
   })
 
   app.delete('/api/notes/:id', (request, response) => {
@@ -46,12 +58,6 @@ let notes = [
     response.status(204).end();
   })
 
-  const generateId = () => {
-    const maxId = notes.length > 0
-      ? Math.max(...notes.map(n => n.id))
-      : 0
-    return maxId + 1
-  }
 
   app.post('/api/notes', (request, response) => {
     const body = request.body;
@@ -62,14 +68,17 @@ let notes = [
         })
     };
 
-    const note = {
+    const note = new Note({
         content: body.content,
         important: Boolean(body.important) || false,
-        id: generateId()
-    }
-    notes = notes.concat(note);
-    response.json(note)
   })
+
+  note.save().then(savedNote => {
+    response.json(savedNote)
+  })
+    
+  })
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT)
