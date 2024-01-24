@@ -80,12 +80,7 @@ app.post("/api/notes", (request, response, next) => {
 });
 
 app.put("/api/notes/:id", (request, response, next) => {
-  const body = request.body;
-
-  const note = {
-    content: body.content,
-    important: body.important,
-  };
+  const { content, important } = request.body;
 
   Note.findByIdAndUpdate(
     request.params.id,
